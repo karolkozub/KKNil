@@ -72,7 +72,7 @@ static const char KKZeros[KKZerosCount] = {0};
 - (BOOL)protocolRespondsToSelector:(SEL)aSelector {
   const char *objCTypes = [self protocolMethodObjCTypesForSelector:aSelector];
 
-  return NULL != objCTypes;
+  return !!objCTypes;
 }
 
 #pragma mark -
@@ -93,7 +93,7 @@ static const char KKZeros[KKZerosCount] = {0};
 }
 
 - (NSMethodSignature *)protocolMethodSignatureForSelector:(SEL)aSelector {
-  const char * objCTypes = [self protocolMethodObjCTypesForSelector:aSelector];
+  const char *objCTypes = [self protocolMethodObjCTypesForSelector:aSelector];
   
   return objCTypes ? [NSMethodSignature signatureWithObjCTypes:objCTypes] : nil;
 }
@@ -115,7 +115,7 @@ static const char KKZeros[KKZerosCount] = {0};
 - (const char *)protocolMethodObjCTypesForSelector:(SEL)aSelector {
   struct objc_method_description methodDescription = protocol_getMethodDescription(self.protocol, aSelector, YES, YES);
   
-  if (NULL == methodDescription.types) {
+  if (!methodDescription.types) {
     methodDescription = protocol_getMethodDescription(self.protocol, aSelector, NO, YES);
   }
   
