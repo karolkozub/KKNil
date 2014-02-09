@@ -15,14 +15,10 @@ enum {
 
 static const char KKZeros[KKZerosCount] = {0};
 
-@interface KKNil ()
-
-@property (nonatomic, strong) Class klass;
-@property (nonatomic, strong) Protocol *protocol;
-
-@end
-
-@implementation KKNil
+@implementation KKNil {
+  Class _klass;
+  Protocol *_protocol;
+}
 
 + (instancetype)nilForClass:(Class)klass {
   return [[KKNil alloc] initWithClass:klass];
@@ -36,7 +32,7 @@ static const char KKZeros[KKZerosCount] = {0};
   self = [super init];
   
   if (self) {
-    self.klass = klass;
+    _klass = klass;
   }
   
   return self;
@@ -46,7 +42,7 @@ static const char KKZeros[KKZerosCount] = {0};
   self = [super init];
   
   if (self) {
-    self.protocol = protocol;
+    _protocol = protocol;
   }
   
   return self;
@@ -55,10 +51,10 @@ static const char KKZeros[KKZerosCount] = {0};
 #pragma mark -
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
-  if (self.klass) {
+  if (_klass) {
     return [self classRespondsToSelector:aSelector];
   
-  } else if (self.protocol) {
+  } else if (_protocol) {
     return [self protocolRespondsToSelector:aSelector];
   }
 
@@ -66,7 +62,7 @@ static const char KKZeros[KKZerosCount] = {0};
 }
 
 - (BOOL)classRespondsToSelector:(SEL)aSelector {
-  return [self.klass instancesRespondToSelector:aSelector];
+  return [_klass instancesRespondToSelector:aSelector];
 }
 
 - (BOOL)protocolRespondsToSelector:(SEL)aSelector {
@@ -78,10 +74,10 @@ static const char KKZeros[KKZerosCount] = {0};
 #pragma mark -
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
-  if (self.klass) {
+  if (_klass) {
     return [self classMethodSignatureForSelector:aSelector];
 
-  } else if (self.protocol) {
+  } else if (_protocol) {
     return [self protocolMethodSignatureForSelector:aSelector];
   }
   
@@ -89,7 +85,7 @@ static const char KKZeros[KKZerosCount] = {0};
 }
 
 - (NSMethodSignature *)classMethodSignatureForSelector:(SEL)aSelector {
-  return [self.klass instanceMethodSignatureForSelector:aSelector];
+  return [_klass instanceMethodSignatureForSelector:aSelector];
 }
 
 - (NSMethodSignature *)protocolMethodSignatureForSelector:(SEL)aSelector {
@@ -113,10 +109,10 @@ static const char KKZeros[KKZerosCount] = {0};
 #pragma mark -
 
 - (const char *)protocolMethodObjCTypesForSelector:(SEL)aSelector {
-  struct objc_method_description methodDescription = protocol_getMethodDescription(self.protocol, aSelector, YES, YES);
+  struct objc_method_description methodDescription = protocol_getMethodDescription(_protocol, aSelector, YES, YES);
   
   if (!methodDescription.types) {
-    methodDescription = protocol_getMethodDescription(self.protocol, aSelector, NO, YES);
+    methodDescription = protocol_getMethodDescription(_protocol, aSelector, NO, YES);
   }
   
   return methodDescription.types;
